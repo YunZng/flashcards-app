@@ -24,8 +24,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-
-    "inlineSourceMap": true
+    "inlineSourceMap": true,
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
