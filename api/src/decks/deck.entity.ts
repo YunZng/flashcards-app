@@ -1,3 +1,4 @@
+import { Card } from 'src/cards/card.entity';
 import { User } from 'src/user/user.entity';
 import {
   Column,
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -24,6 +26,9 @@ export class Deck {
 
   @Column({ default: 0 })
   numberOfCards: number;
+
+  @OneToMany(() => Card, (card) => card.deckId)
+  cards: Card[];
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
