@@ -27,7 +27,7 @@ export class Deck {
   @Column({ default: 0 })
   numberOfCards: number;
 
-  @OneToMany(() => Card, (card) => card.deckId)
+  @OneToMany(() => Card, (card) => card.deck, { cascade: true })
   cards: Card[];
 
   @PrimaryGeneratedColumn('uuid')

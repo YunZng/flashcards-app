@@ -1,3 +1,4 @@
+import { Card } from 'src/cards/card.entity';
 import { Deck } from 'src/decks/deck.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -20,4 +21,7 @@ export class User {
   
   @OneToMany(() => Deck, (deck) => deck.user)
   decks: Deck[];
+
+  @OneToMany(() => Card, (card) => card.user)
+  cards: Card[];
 }

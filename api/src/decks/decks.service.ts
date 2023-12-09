@@ -53,4 +53,13 @@ export class DecksService {
     }
     return this.deckRepo.remove(deck);
   }
+
+  async changeCardCount(id: string, count: number){
+    const deck = await this.findOne(id);
+    if (!deck) {
+      return null;
+    }
+    deck.numberOfCards+=count;
+    return await this.deckRepo.save(deck);
+  }
 }

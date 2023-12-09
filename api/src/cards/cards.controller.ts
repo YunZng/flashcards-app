@@ -16,6 +16,9 @@ import { UserId } from 'src/decorators/user-id.decorator';
 import { CardResponseDTO } from './card-response.dto';
 import { CardsService } from './cards.service';
 import { CreateCardDTO } from './card-create.dto';
+import { UpdateCardDto } from './card-update.dto';
+import { DeckOwnershipGuard } from 'src/guard/deck-owner.guard';
+import { CardOwnershipGuard } from 'src/guard/card-owner.guard';
 
 type CardResponseWithPagination = {
     search?: string;
@@ -26,25 +29,25 @@ type CardResponseWithPagination = {
     data: CardResponseDTO[];
 };
 
-@UseGuards(JwtAuthGuard)
-@Controller("decks/:deckId/cards")
+@UseGuards(JwtAuthGuard, DeckOwnershipGuard)
+@Controller("decks/:id/cards")
 export class CardsController {
     constructor(private readonly cardsService: CardsService) { }
 
-    @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(
         @Query('limit') limit: number = 10,
         @Query('offset') offset: number = 0,
         @Query('search') search: string,
+        @Param('id') deckId: string,
         @UserId() userId: number,
     ): Promise<CardResponseWithPagination> {
-        const posts = await this.cardsService.findAll(limit, offset, userId, search);
+        const cards = await this.cardsService.findAll(limit, offset, deckId, userId, search);
         return {
             search,
-            data: posts.map((post) => {
-                delete post.userId;
-                return post;
+            data: cards.map((card) => {
+                delete card.deck, card.userId, card.user;
+                return card;
             }),
             pagination: {
                 limit,
@@ -56,49 +59,49 @@ export class CardsController {
     @Post()
     async create(
         @Body() createCardDto: CreateCardDTO,
-        @UserId() deckId: number,
+        @Param("id") deckId: string,
+        @UserId() userId: number,
     ): Promise<CreateCardDTO> {
-        const card = await this.cardsService.create(createCardDto, userId);
-        delete card.userId;
-        delete card.updatedAt;
-        delete card.numberOfCards;
+        const card = await this.cardsService.create(createCardDto, deckId, userId);
         return card;
     }
 
-    @Get(':id')
+    @Get(':cardId')
     async findOne(
-        @Param('id') id: string
+        @Param('id') deckId: string,
+        @Param('cardId') id: string,
+        @UserId() userId: number
     ): Promise<CardResponseDTO> {
-        const card = await this.cardsService.findOne(id);
+        const card = await this.cardsService.findOne(deckId, id, userId);
         if (!card) {
             throw new NotFoundException(`Card with ID ${id} not found`);
         }
-        delete card.userId;
         return card;
     }
 
-    @Patch(':id')
+    @UseGuards(CardOwnershipGuard)
+    @Patch(':cardId')
     async update(
-        @Param('id') id: string,
+        @Param('cardId') id: string,
+        @Param('id') deckId: string,
         @Body() updateCardDto: UpdateCardDto,
         @UserId() userId: number,
     ): Promise<CardResponseDTO> {
-        let card = await this.cardsService.findOne(id);
+        let card = await this.cardsService.findOne(deckId, id, userId);
         if (!card) {
             throw new NotFoundException(`Card with ID ${id} not found`);
-        } else if (card.userId !== userId) {
-            throw new ForbiddenException("Don't try to hack other people's stuff");
         }
-        card = await this.cardsService.update(id, updateCardDto);
-        delete card.userId;
+        card = await this.cardsService.update(deckId, id, updateCardDto);
         return card;
     }
-
-    @Delete(':id')
+    @UseGuards(CardOwnershipGuard)
+    @Delete(':cardId')
     async remove(
-        @Param('id') id: string,
+        @Param('id') deckId: string,
+        @Param('cardId') id: string,
+        @UserId() userId: number,
     ): Promise<{ message: string; cardId: string }> {
-        const card = await this.cardsService.remove(id);
+        const card = await this.cardsService.remove(deckId, id, userId);
         if (!card) {
             throw new NotFoundException(`Card with ID ${id} not found`);
         }
