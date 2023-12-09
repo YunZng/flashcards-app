@@ -1,18 +1,39 @@
 import Sidebar from "./components/sidebar";
 import Feed from "./components/feed";
 import { Toaster } from "./components/ui/toaster";
-import { LoginDialog } from "./components/auth/login-dialog";
-import { RegisterDialog } from "./components/auth/register-dialog";
 import { useStore } from "./lib/store";
-import { LogoutDialog } from "./components/auth/logout-dialog";
 import { useToast } from "./components/ui/use-toast";
 import { useEffect } from "react";
 import { getAuthenticatedUserToken, isTokenExpired, removeAuthenticatedUserToken } from "./lib/auth";
+import Aside from "./components/aside";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ErrorPage from "./components/error";
+import Cards from "./components/cards/cards";
 
 function App() {
-  const user = useStore((state) => state.user);
   const clearUser = useStore((state) => state.clearUser);
   const { toast } = useToast();
+
+  const router = createBrowserRouter([
+    {
+      path: "/homework-5-flashcards-app-YunZng/",
+      element: <>
+        <Sidebar />
+        <Feed />
+        <Aside />
+      </>,
+      errorElement: <ErrorPage />,
+    }, {
+      path: "/homework-5-flashcards-app-YunZng/decks/:deckId",
+      element: <>
+        <Sidebar />
+        <Cards />
+        <Aside />
+      </>,
+      errorElement: <ErrorPage />,
+    },
+    
+  ]);
 
   useEffect(() => {
     const token = getAuthenticatedUserToken();
@@ -31,11 +52,7 @@ function App() {
   }, []);
   return (
     <div className="flex justify-center min-h-screen max-h-screen overflow-hidden">
-      <Sidebar />
-      <Feed />
-      <div className="flex flex-col gap-2 p-4">
-        {user ? <LogoutDialog /> : <><LoginDialog /><RegisterDialog /></>}
-      </div>
+      <RouterProvider router={router} />
       <Toaster />
     </div>
   );

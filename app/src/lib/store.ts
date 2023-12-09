@@ -1,8 +1,10 @@
-import { Deck, User } from "./types";
+import { Card, Deck, User } from "./types";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 type State = {
+  selectedDeckId: string | null;
+  cards: Card[];
   decks: Deck[];
   user: User | null;
 };
@@ -12,12 +14,24 @@ type Action = {
   removeDeck: (id: string) => void;
   addDeck: (deck: Deck) => void;
   editDeck: (deck: Deck) => void;
+
+  setCard: (cards: Card[]) => void;
+  removeCard: (id: string) => void;
+  addCard: (card: Card) => void;
+  editCard: (card: Card) => void;
+  clearCard: () => void;
+
+  setSelectedDeckId: (id: string) => void;
+  // clearSelectedDeckId: () => void;
+
   setUser: (user: User) => void;
   clearUser: () => void;
 };
 
 // define the initial state
 const initialState: State = {
+  selectedDeckId: null,
+  cards: [],
   decks: [],
   user: null
 };
@@ -44,7 +58,63 @@ export const useStore = create(
       const newDecks: Deck[] = [deck, ...get().decks];
       set({ decks: newDecks });
     },
+    
+    // //////////////////////////////////////////////////////////////////////////
+    
+    setCard: (cards) => set({ cards }),
 
+    removeCard: (id) => {
+      const target_card = get().cards.find((card) => card.id === id)!;
+      const newCards = get().cards.filter((card) => card.id !== id);
+      set({
+        cards: newCards,
+        decks: get().decks.map((deck) => {
+          if (deck.id === target_card.deckId) {
+            return {
+              ...deck,
+              numberOfCards: deck.numberOfCards - 1,
+            };
+          }
+          return deck;
+        }),
+      });
+    },
+
+    editCard(card) {
+      const newCards = get().cards.map((_card) =>
+        _card.id === card.id ? card : _card,
+      );
+      set({ cards: newCards });
+    },
+
+    addCard: (card) => {
+      const newCards: Card[] = [card, ...get().cards];
+      set({
+        cards: newCards,
+        decks: get().decks.map((deck) => {
+          if (deck.id === card.deckId) {
+            return {
+              ...deck,
+              numberOfCards: deck.numberOfCards + 1,
+            };
+          }
+          return deck;
+        }),
+      });
+    },
+
+    clearCard: () => {
+      set({ cards: [] });
+    },
+
+    // //////////////////////////////////////////////////////////////////////////
+    
+    setSelectedDeckId: (id) => set({ selectedDeckId: id }),
+    
+    // clearSelectedDeckId: () => set({ selectedDeckId: null }),
+    
+    // //////////////////////////////////////////////////////////////////////////
+    
     setUser: (user) => {
       set({ user: user });
     },

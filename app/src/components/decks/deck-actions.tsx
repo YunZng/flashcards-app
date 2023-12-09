@@ -3,15 +3,15 @@ import {
   Pencil1Icon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-} from "./ui/dropdown-menu";
-import { Dialog, DialogTrigger } from "./ui/dialog";
+} from "../ui/dropdown-menu";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 import EditDeckDialog from "./edit-deck-dialog";
 import useMutationDecks from "@/hooks/use-mutation-decks";
 

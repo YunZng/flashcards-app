@@ -1,5 +1,8 @@
 export type Card = {
-  text: string;
+  front: string;
+  back: string;
+  id: string;
+  deckId: string;
 };
 
 export type Deck = {

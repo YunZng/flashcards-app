@@ -3,14 +3,14 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "./ui/dialog";
+} from "../ui/dialog";
 import { Label } from "@radix-ui/react-label";
-import { Button } from "./ui/button";
-import { DialogHeader, DialogFooter } from "./ui/dialog";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import { DialogHeader, DialogFooter } from "../ui/dialog";
+import { Input } from "../ui/input";
 import { Deck } from "@/lib/types";
 import { useStore } from "@/lib/store";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "../ui/use-toast";
 import useMutationDecks from "@/hooks/use-mutation-decks";
 
 const EditDeckDialog = ({ id }: { id: string }) => {

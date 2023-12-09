@@ -88,6 +88,7 @@ export const RegisterDialog = () => {
                             id="password"
                             className="col-span-3"
                             placeholder="Enter your password here."
+                            type="password"
                         />
                     </div>
                 </div>

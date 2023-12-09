@@ -1,5 +1,5 @@
 import Header from "./header";
-import Decks from "./decks";
+import Decks from "./decks/decks";
 import { useStore } from "@/lib/store";
 
 const Feed = () => {
